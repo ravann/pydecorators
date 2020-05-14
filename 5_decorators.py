@@ -1,8 +1,8 @@
 import functools
-"""
-The below decorator converts the functions output to lowercase.
-"""
 
+"""
+Demonstrates how multiple decorators are called
+"""
 
 def lower_case(f):
     """A decorator function that takes in a function and returns a function"""
@@ -18,14 +18,37 @@ def lower_case(f):
     return lf
 
 
+class Trace:
+    def __init__(self):
+        self.enabled = True
+
+    def __call__(self, f):
+        @functools.wraps(f)
+        def wrap(*args, **kwargs):
+            if(self.enabled):
+                print("Calling {}".format(f))
+            return f(*args, **kwargs)
+        return wrap
+
+
+trace = Trace()
+
+
+@trace
 @lower_case
 def say_hello():
     return "Hello World!!!"
 
+@trace
 @lower_case
 def say_hello2(name):
     return f"Hello {name}!!!"
 
 print(say_hello())
 
+trace.enabled = False
 print(say_hello2("John"))
+
+trace.enabled = True
+print(say_hello2("Manish"))
+
